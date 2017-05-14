@@ -106,7 +106,7 @@ void SelectionSort(int *ary, int length)
 	SelectionSort(ary,ptrEnd);
 }
 
-/* An implementation of Qsort using a block of memory*/
+/* An implementation of quick sort using a block of memory*/
 void Qsort(int *front, int *back)
 {
 	if((front - back)>=0)
@@ -136,13 +136,47 @@ void Qsort(int *ary, int length)
 	Qsort(ary,ptrEnd);
 }
 
+/* An implementation of counting sort using a block of memory*/
+void countingSort(int *front, int *back, int max)
+{
+	/* initialize the auxiliary array */
+	int count[max];
+	for(int i=0; i<max; i++)
+	{
+		count[i]=0;
+	}
+
+	for(int *i = front; (back - i)>0; i++)
+	{
+		count[*i] += 1;
+	}
+
+	int *it = front;
+	for(int i=0; i<max; i++)
+	{
+		while(count[i]>0)
+		{
+			*it = i;
+			it++;
+			count[i] = count[i]-1;
+		}
+	}
+}
+
+/* A wrapper for countingSort which sorts an array */
+void countingSort(int *ary, int length, int max)
+{
+	int *ptrEnd = ary + length;
+	countingSort(ary, ptrEnd, max);
+}
+
 int main()
 {
 
 	cout << "\n";
 
 	static int INT_MAX = 2147483647;
-	int length = 5000;
+	int length = 10000;
 
 	clock_t start;
 	clock_t finish;
@@ -260,6 +294,40 @@ int main()
 	else
 	{
 		cout<<"SelectionSort succesfully re-sorted the list in " << duration << " seconds\n\n";
+	}
+
+	start = clock();
+	shuffle(ary,length);
+	finish = clock();
+
+	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
+	sorted = IsSorted(ary,length);
+
+        if(!sorted)
+	{
+		cout<<"succesfully re-shuffled the list in "<< duration <<" seconds\n\n";
+	}
+	else
+	{
+		cout<<"failed to reshuffle the list\n\n";
+		return -1;
+	}
+
+	start = clock();
+	countingSort(ary,length,length);
+	finish = clock();
+
+	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
+	sorted = IsSorted(ary,length);
+
+        if(!sorted)
+	{
+		cout<<"countingSort unsuccesful\n\n";
+		return -1;
+	}
+	else
+	{
+		cout<<"countingSort succesfully re-sorted the list in " << duration << " seconds\n\n";
 	}
 
 	start = clock();
