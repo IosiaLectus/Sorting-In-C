@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <vector>
 
 using namespace std;
 
@@ -19,7 +18,7 @@ bool IsSorted(int *front, int *back)
 	return true;
 }
 
-/* Check to see if elements of and array is sorted */
+/* Check to see if elements of an array are sorted */
 bool IsSorted(int *ary, int length)
 {
 	return IsSorted(ary,ary+length);
@@ -57,7 +56,7 @@ void Qsort(int *front, int *back)
 	return;
 }
 
-/* A Wrapper for Qsort */
+/* A wrapper for Qsort which sorts an array */
 void Qsort(int *ary, int length)
 {
 	int *ptrEnd = ary + length;
