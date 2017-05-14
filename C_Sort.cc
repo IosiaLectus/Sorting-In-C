@@ -50,6 +50,62 @@ void shuffle(int *ary, int length)
 	shuffle(ary, ary+length);
 }
 
+/* An implementation of bubble sort using a block of memory*/
+void BubbleSort(int *front, int *back)
+{
+	if((front - back)>=0)
+	{
+		return;
+	}
+	bool sorted = false;
+	while(!sorted)
+	{
+		sorted = true;
+
+		for(int *i = front; (back - i - 1)>0; i++)
+		{
+			if(*i > *(i+1))
+			{
+				Swap(i,i+1);
+				sorted = false;
+			}
+		}	
+	}
+}
+
+/* A wrapper for BubbleSort which sorts an array */
+void BubbleSort(int *ary, int length)
+{
+	int *ptrEnd = ary + length;
+	BubbleSort(ary,ptrEnd);
+}
+
+/* An implementation of selection sort using a block of memory*/
+void SelectionSort(int *front, int *back)
+{
+	if((front - back)>=0)
+	{
+		return;
+	}
+	int *min = front;
+	for(int *i = front; (back - i)>0; i++)
+	{
+		if(*i < *min)
+		{
+			min = i;
+		}
+	}	
+	Swap(front, min);
+	SelectionSort(front+1,back);
+}
+
+/* A wrapper for SelectionSort which sorts an array */
+void SelectionSort(int *ary, int length)
+{
+	int *ptrEnd = ary + length;
+	SelectionSort(ary,ptrEnd);
+}
+
 /* An implementation of Qsort using a block of memory*/
 void Qsort(int *front, int *back)
 {
@@ -80,45 +136,13 @@ void Qsort(int *ary, int length)
 	Qsort(ary,ptrEnd);
 }
 
-/* An implementation of bubble sort using a block of memory*/
-void BubbleSort(int *front, int *back)
-{
-	if((front - back)>=0)
-	{
-		return;
-	}
-	bool sorted = false;
-	while(!sorted)
-	{
-		sorted = true;
-
-		for(int *i = front; (back - i)>0; i++)
-		{
-			if(*i > *(i+1))
-			{
-				Swap(i,i+1);
-				sorted = false;
-			}
-		}	
-	}
-}
-
-/* A wrapper for BubbleSort which sorts an array */
-void BubbleSort(int *ary, int length)
-{
-	int *ptrEnd = ary + length;
-	BubbleSort(ary,ptrEnd);
-}
-
-
-
 int main()
 {
 
 	cout << "\n";
 
 	static int INT_MAX = 2147483647;
-	int length = 10000;
+	int length = 5000;
 
 	clock_t start;
 	clock_t finish;
@@ -145,7 +169,7 @@ int main()
 	cout << "\n";
         if(!sorted)
 	{
-		cout<<"Created an unsorted list in time "<<duration<<" seconds\n\n";
+		cout<<"Created an unsorted list in time " << duration << " seconds\n\n";
 	}
 	else
 	{
@@ -188,74 +212,6 @@ int main()
 	}
 
 	start = clock();
-	Qsort(ary,length);
-	finish = clock();
-
-	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
-	sorted = IsSorted(ary,length);
-
-        if(!sorted)
-	{
-		cout<<"Qsort unsuccesful\n\n";
-		return -1;
-	}
-	else
-	{
-		cout<<"Qsort succesfully re-sorted the list in " << duration << " seconds\n\n";
-	}
-
-	start = clock();
-	shuffle(ary,length);
-	finish = clock();
-
-	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
-	sorted = IsSorted(ary,length);
-
-        if(!sorted)
-	{
-		cout<<"succesfully re-shuffled the list in "<< duration <<" seconds\n\n";
-	}
-	else
-	{
-		cout<<"failed to reshuffle the list\n\n";
-		return -1;
-	}
-
-	start = clock();
-	Qsort(ary,length);
-	finish = clock();
-
-	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
-	sorted = IsSorted(ary,length);
-
-        if(!sorted)
-	{
-		cout<<"Qsort unsuccesful\n\n";
-		return -1;
-	}
-	else
-	{
-		cout<<"Qsort succesfully re-sorted the list in " << duration << " seconds\n\n";
-	}
-
-	start = clock();
-	shuffle(ary,length);
-	finish = clock();
-
-	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
-	sorted = IsSorted(ary,length);
-
-        if(!sorted)
-	{
-		cout<<"succesfully re-shuffled the list in "<< duration <<" seconds\n\n";
-	}
-	else
-	{
-		cout<<"failed to reshuffle the list\n\n";
-		return -1;
-	}
-
-	start = clock();
 	BubbleSort(ary,length);
 	finish = clock();
 
@@ -270,6 +226,40 @@ int main()
 	else
 	{
 		cout<<"BubbleSort succesfully re-sorted the list in " << duration << " seconds\n\n";
+	}
+
+	start = clock();
+	shuffle(ary,length);
+	finish = clock();
+
+	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
+	sorted = IsSorted(ary,length);
+
+        if(!sorted)
+	{
+		cout<<"succesfully re-shuffled the list in "<< duration <<" seconds\n\n";
+	}
+	else
+	{
+		cout<<"failed to reshuffle the list\n\n";
+		return -1;
+	}
+
+	start = clock();
+	SelectionSort(ary,length);
+	finish = clock();
+
+	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
+	sorted = IsSorted(ary,length);
+
+        if(!sorted)
+	{
+		cout<<"SelectionSort unsuccesful\n\n";
+		return -1;
+	}
+	else
+	{
+		cout<<"SelectionSort succesfully re-sorted the list in " << duration << " seconds\n\n";
 	}
 
 	start = clock();
