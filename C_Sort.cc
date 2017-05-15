@@ -126,7 +126,6 @@ void Qsort(int *front, int *back)
 
 	Qsort(front,it - 1);
 	Qsort(it,back);
-	return;
 }
 
 /* A wrapper for Qsort which sorts an array */
@@ -134,6 +133,81 @@ void Qsort(int *ary, int length)
 {
 	int *ptrEnd = ary + length;
 	Qsort(ary,ptrEnd);
+}
+
+/* Return the minimum of two numbers */
+int min(int x, int y)
+{
+	if(x<y)
+	{
+		return x;
+	}
+	return y;
+}
+
+/* An implementation of merge sort using a block of memory */
+void MergeSort(int *front, int *back, int *tmp)
+{
+	int len = back - front;
+	int *tmp2 = tmp + len;
+
+	if(len==2)
+	{
+		if(*front > *(front+1))
+		{
+			Swap(front,front+1);
+		}
+		return;
+	}
+	if(len <= 1)
+	{
+		return;
+	}
+	int half = len/2;
+	MergeSort(front, front+half, tmp);
+	MergeSort(front+half, back, tmp);
+	int *it1=front;
+	int *it2=front+half;
+
+	/* merge */
+	for(int *i= tmp; (tmp2-i)>0; i++)
+	{
+		if((it1-front)<half and (it2-(front+half))<(back-(front+half)) and *it1<=*it2)
+		{
+			*i = *it1;
+			it1++;
+		}
+		else if((it1-front)<half and (it2-(front+half))<(back-(front+half)) and *it1>*it2)
+		{
+			*i = *it2;
+			it2++;
+		}
+		else if((it1-front)>=half)
+		{
+			*i = *it2;
+			it2++;
+		}
+		else
+		{
+			*i = *it1;
+			it1++;
+		}
+	}
+
+	/* Write merged list back to the original array */
+	for(int *i=tmp;(tmp2-i)>0;i++)
+	{
+		*(front + (i-tmp)) = *i;
+	}
+	
+}
+
+/* A wrapper for MergeSort which sorts an array */
+void MergeSort(int *ary, int length)
+{
+	int tmp[length];
+	int *ptrEnd = ary + length;
+	MergeSort(ary, ptrEnd, tmp);
 }
 
 /* An implementation of counting sort using a block of memory*/
@@ -176,7 +250,7 @@ int main()
 	cout << "\n";
 
 	static int INT_MAX = 2147483647;
-	int length = 10000;
+	int length = 5000;
 
 	clock_t start;
 	clock_t finish;
@@ -184,32 +258,34 @@ int main()
 
 	srand(time(NULL));
 
-	start = clock();
-
 	int ary[length];
+	int ary_check[length];
 
 	for(int i = 0; i<length; i++)
 	{
-		int rnd = rand() % length;
-		ary[i] = rnd;
+		ary[i] = i;
+		ary_check[i] = i;
 	}
 
+	start = clock();
+	shuffle(ary,length);
 	finish = clock();
+
 	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
+	bool sorted = IsSorted(ary,length);
 
-
-        bool sorted = IsSorted(ary,length);
-
-	cout << "\n";
         if(!sorted)
 	{
-		cout<<"Created an unsorted list in time " << duration << " seconds\n\n";
+		cout<<"succesfully re-shuffled the list in "<< duration <<" seconds\n\n";
 	}
 	else
 	{
-		cout<<"Failed to create an unsorted list\n\n";
+		cout<<"failed to reshuffle the list\n\n";
 		return -1;
 	}
+
+	
+	/* Test Qsort */
 
 	start = clock();
 	Qsort(ary,length);
@@ -217,17 +293,30 @@ int main()
 
 	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
 	sorted = IsSorted(ary,length);
+	bool changed = false;
 
-        if(!sorted)
+	for(int i=0; i<length; i++)
+	{
+		if(ary[i] != ary_check[i])
+		{
+			changed = true;
+		}
+	}
+
+	if(changed)
+	{
+		cout<<"list was altered by Qsort\n\n";
+	}
+	else if(!sorted)
 	{
 		cout<<"Qsort unsuccesful\n\n";
-		return -1;
 	}
 	else
 	{
 		cout<<"Qsort succesfully sorted the list in " << duration << " seconds\n\n";
 	}
 
+	/* re-shuffle the list */
 	start = clock();
 	shuffle(ary,length);
 	finish = clock();
@@ -245,23 +334,37 @@ int main()
 		return -1;
 	}
 
+	/* Test BubbleSort */
 	start = clock();
 	BubbleSort(ary,length);
 	finish = clock();
 
 	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
 	sorted = IsSorted(ary,length);
+	changed = false;
 
-        if(!sorted)
+	for(int i=0; i<length; i++)
+	{
+		if(ary[i] != ary_check[i])
+		{
+			changed = true;
+		}
+	}
+
+	if(changed)
+	{
+		cout<<"list was altered by BubbleSort\n\n";
+	}
+	else if(!sorted)
 	{
 		cout<<"BubbleSort unsuccesful\n\n";
-		return -1;
 	}
 	else
 	{
 		cout<<"BubbleSort succesfully re-sorted the list in " << duration << " seconds\n\n";
 	}
 
+	/* re-shuffle the list */
 	start = clock();
 	shuffle(ary,length);
 	finish = clock();
@@ -279,14 +382,28 @@ int main()
 		return -1;
 	}
 
+	/* Test SelectionSort */
 	start = clock();
 	SelectionSort(ary,length);
 	finish = clock();
 
 	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
 	sorted = IsSorted(ary,length);
+	changed = false;
 
-        if(!sorted)
+	for(int i=0; i<length; i++)
+	{
+		if(ary[i] != ary_check[i])
+		{
+			changed = true;
+		}
+	}
+
+	if(changed)
+	{
+		cout<<"list was altered by SelectionSort\n\n";
+	}
+	else if(!sorted)
 	{
 		cout<<"SelectionSort unsuccesful\n\n";
 		return -1;
@@ -296,6 +413,7 @@ int main()
 		cout<<"SelectionSort succesfully re-sorted the list in " << duration << " seconds\n\n";
 	}
 
+	/* re-shuffle the list */
 	start = clock();
 	shuffle(ary,length);
 	finish = clock();
@@ -313,14 +431,28 @@ int main()
 		return -1;
 	}
 
+	/* Test countingSort */
 	start = clock();
 	countingSort(ary,length,length);
 	finish = clock();
 
 	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
 	sorted = IsSorted(ary,length);
+	changed = false;
 
-        if(!sorted)
+	for(int i=0; i<length; i++)
+	{
+		if(ary[i] != ary_check[i])
+		{
+			changed = true;
+		}
+	}
+
+	if(changed)
+	{
+		cout<<"list was altered by countingSort\n\n";
+	}
+	else if(!sorted)
 	{
 		cout<<"countingSort unsuccesful\n\n";
 		return -1;
@@ -330,6 +462,7 @@ int main()
 		cout<<"countingSort succesfully re-sorted the list in " << duration << " seconds\n\n";
 	}
 
+	/* re-shuffle the list */
 	start = clock();
 	shuffle(ary,length);
 	finish = clock();
@@ -345,6 +478,37 @@ int main()
 	{
 		cout<<"failed to reshuffle the list\n\n";
 		return -1;
+	}
+
+	/* Test MergeSort */
+	start = clock();
+	MergeSort(ary,length);
+	finish = clock();
+
+	duration = (finish - start)/ (double) CLOCKS_PER_SEC;
+	sorted = IsSorted(ary,length);
+	changed = false;
+
+	for(int i=0; i<length; i++)
+	{
+		if(ary[i] != ary_check[i])
+		{
+			changed = true;
+		}
+	}
+
+	if(changed)
+	{
+		cout<<"list was altered by MergeSort\n\n";
+	}
+	else if(!sorted)
+	{
+		cout<<"MergeSort unsuccesful\n\n";
+		return -1;
+	}
+	else
+	{
+		cout<<"MergeSort succesfully re-sorted the list in " << duration << " seconds\n\n";
 	}
 	
 	return 0;
